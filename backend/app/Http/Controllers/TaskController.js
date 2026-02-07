@@ -3,7 +3,11 @@ const TaskService = require("../../Services/TaskService");
 class TaskController {
 	async create(req, res, next) {
 		try {
-			const task = await TaskService.createTask(req.body);
+			const taskData = {
+				...req.body,
+				assignee_id: req.user.id,
+			};
+			const task = await TaskService.createTask(taskData);
 			res.status(201).json({ success: true, data: task });
 		} catch (error) {
 			next(error);
@@ -12,7 +16,11 @@ class TaskController {
 
 	async index(req, res, next) {
 		try {
-			const tasks = await TaskService.getTasks(req.query);
+			const filters = {
+				assignee_id: req.user.id,
+				...req.query,
+			};
+			const tasks = await TaskService.getTasks(filters);
 			res.status(200).json({ success: true, data: tasks });
 		} catch (error) {
 			next(error);
